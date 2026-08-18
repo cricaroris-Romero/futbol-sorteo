@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚽ Sorteo de Equipos</title>
-    <link rel="stylesheet" href="css/styles.css?v=4">
+    <link rel="stylesheet" href="css/styles.css?v=5">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -43,16 +43,14 @@
                 <span id="user-display"></span>
                 <button id="logout-btn" class="btn-small">Salir</button>
             </div>
+            <nav class="tabs">
+                <button class="tab active" data-tab="players">Jugadores</button>
+                <button class="tab" data-tab="sorteo">Sorteo</button>
+                <button class="tab" data-tab="result">Resultado</button>
+                <button class="tab" data-tab="export">Exportar</button>
+                <button class="tab tab-admin hidden" data-tab="users">Usuarios</button>
+            </nav>
         </header>
-
-        <!-- TABS -->
-        <nav class="tabs">
-            <button class="tab active" data-tab="players">Jugadores</button>
-            <button class="tab" data-tab="sorteo">Sorteo</button>
-            <button class="tab" data-tab="result">Resultado</button>
-            <button class="tab" data-tab="export">Exportar</button>
-            <button class="tab tab-admin hidden" data-tab="users">Usuarios</button>
-        </nav>
 
         <!-- TAB: JUGADORES -->
         <section id="tab-players" class="tab-content active">
