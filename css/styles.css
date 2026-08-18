@@ -32,10 +32,22 @@ body {
 
 /* ==================== LOGIN ==================== */
 .screen { display: none; }
-.screen.active { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 16px; }
-
+#login-screen.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 16px;
+}
 #login-screen {
     background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 70%);
+}
+
+/* ==================== APP SCREEN ==================== */
+#app-screen.active {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .login-container {
@@ -116,25 +128,18 @@ header {
     flex-direction: column;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
 }
-header > .header-left,
-header > .header-right {
+.header-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 16px;
 }
-header > .header-left {
-    justify-content: center;
-}
-header > .header-right {
-    justify-content: center;
-    gap: 10px;
-    padding: 0 16px 8px;
-}
 .header-left { display: flex; align-items: center; gap: 8px; }
 .header-left h2 { color: var(--accent); font-size: 1.1rem; }
 .logo-sm { font-size: 1.3rem; }
+.header-right { display: flex; align-items: center; gap: 10px; }
 #user-display { color: var(--text-secondary); font-size: 0.75rem; }
 
 /* ==================== TABS ==================== */
@@ -145,17 +150,18 @@ header > .header-right {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    flex-shrink: 0;
 }
 .tabs::-webkit-scrollbar { display: none; }
 .tab {
     flex: 1;
-    padding: 12px 8px;
+    padding: 12px 6px;
     background: transparent;
     color: var(--text-secondary);
     border: none;
     border-bottom: 3px solid transparent;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     transition: all 0.3s;
     white-space: nowrap;
     text-align: center;
@@ -170,6 +176,7 @@ header > .header-right {
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
+    flex: 1;
 }
 .tab-content.active { display: block; }
 
@@ -353,12 +360,8 @@ header > .header-right {
     outline-offset: 3px;
     transform: scale(1.1);
 }
-.color-option[data-color="#000000"] {
-    border-color: #666 !important;
-}
-.color-option[data-color="#ffffff"] {
-    border-color: #666 !important;
-}
+.color-option[data-color="#000000"] { border-color: #666 !important; }
+.color-option[data-color="#ffffff"] { border-color: #666 !important; }
 
 /* ==================== SORT BUTTON ==================== */
 .btn-sort {
@@ -514,69 +517,87 @@ header > .header-right {
     .logo { font-size: 48px; }
     .login-container h1 { font-size: 1.2rem; }
 
+    .header-row { padding: 8px 12px; }
     .header-left h2 { font-size: 0.95rem; }
+    .logo-sm { font-size: 1.1rem; }
+    #user-display { font-size: 0.65rem; }
 
     .tab {
-        font-size: 0.72rem;
-        padding: 10px 6px;
+        font-size: 0.7rem;
+        padding: 10px 4px;
     }
 
-    .tab-content { padding: 12px; }
+    .tab-content { padding: 10px; }
 
-    .add-form { padding: 12px; }
-    .add-form h3 { font-size: 0.85rem; }
+    .section-title {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .add-form { padding: 10px; }
+    .add-form h3 { font-size: 0.8rem; margin-bottom: 8px; }
 
     .form-group input,
     .form-row select,
     .form-group select {
         padding: 10px 12px;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .rating-btn {
-        height: 40px;
-        font-size: 0.9rem;
+        height: 38px;
+        font-size: 0.85rem;
     }
 
     .player-card {
         padding: 10px;
     }
-    .player-name { font-size: 0.85rem; }
+    .player-name { font-size: 0.82rem; }
+    .player-details { gap: 6px; }
+    .player-rating { font-size: 0.65rem; padding: 2px 6px; }
+    .player-position { font-size: 0.65rem; }
 
-    .sorteo-config { padding: 14px; }
-    .sorteo-config h3 { font-size: 0.9rem; }
-    .config-group label { font-size: 0.8rem; }
+    .sorteo-config { padding: 12px; }
+    .sorteo-config h3 { font-size: 0.85rem; }
+    .config-group { margin-bottom: 14px; }
+    .config-group label { font-size: 0.78rem; margin-bottom: 8px; }
 
-    .team-count-btns { justify-content: center; }
+    .team-count-btns { justify-content: center; gap: 8px; }
     .team-btn {
-        width: 46px;
-        height: 46px;
-        font-size: 1.1rem;
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
     }
 
     .color-picker-group {
-        padding: 8px 10px;
-        gap: 8px;
+        padding: 8px;
+        gap: 6px;
     }
     .color-picker-group label {
-        min-width: 55px;
-        font-size: 0.75rem;
+        min-width: 50px;
+        font-size: 0.7rem;
     }
     .color-option {
-        width: 30px;
-        height: 30px;
+        width: 28px;
+        height: 28px;
     }
 
     .btn-sort {
         padding: 14px;
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
-    .team-card { padding: 12px; }
-    .team-card h3 { font-size: 0.85rem; }
-    .team-player-name { font-size: 0.8rem; }
+    .team-card { padding: 10px; }
+    .team-card h3 { font-size: 0.82rem; margin-bottom: 8px; }
+    .team-player { padding: 6px 0; }
+    .team-player-name { font-size: 0.78rem; }
+    .team-avg { font-size: 0.75rem; }
 
-    .export-area { padding: 25px 12px; }
-    .export-area h3 { font-size: 0.95rem; }
-    .export-area p { font-size: 0.85rem; }
+    .export-area { padding: 20px 12px; }
+    .export-area h3 { font-size: 0.9rem; }
+    .export-area p { font-size: 0.8rem; }
+
+    #users-section .add-form .form-row-inline {
+        flex-direction: column;
+    }
 }
