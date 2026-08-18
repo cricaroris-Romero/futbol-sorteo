@@ -96,15 +96,18 @@ const Teams = {
             }
         }
 
-        // Place each player in the team with most empty space
+        // Place each player: pick team with most room, break ties by lowest rating
         ordered.forEach(player => {
             let bestTeam = 0;
-            let mostRoom = -1;
+            let bestScore = -1;
 
             for (let i = 0; i < numTeams; i++) {
                 const room = teams[i].maxPlayers - teams[i].players.length;
-                if (room > mostRoom) {
-                    mostRoom = room;
+                if (room <= 0) continue;
+                // Score: prioritize room, break ties with lowest total rating
+                const score = room * 1000 - teams[i].totalRating;
+                if (score > bestScore) {
+                    bestScore = score;
                     bestTeam = i;
                 }
             }
