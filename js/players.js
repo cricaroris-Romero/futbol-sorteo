@@ -123,6 +123,33 @@ const Players = {
         return available;
     },
 
+    async getAllPlayers() {
+        const snapshot = await db.collection("players").get();
+        const all = [];
+        snapshot.forEach(doc => {
+            all.push({
+                id: doc.id,
+                name: doc.data().name,
+                rating: doc.data().rating,
+                position: doc.data().position,
+                added: doc.data().added,
+                isCustom: doc.data().isCustom
+            });
+        });
+        return all;
+    },
+
+    async deletePlayer(name) {
+        const snapshot = await db.collection("players")
+            .where("name", "==", name)
+            .get();
+        if (!snapshot.empty) {
+            await snapshot.docs[0].ref.delete();
+            return true;
+        }
+        return false;
+    },
+
     renderList(container, isAdmin) {
         const players = this.getAll();
         if (players.length === 0) {
@@ -168,21 +195,47 @@ const PlayersUI = {
         const addSection = document.getElementById("add-player-section");
         const newPlayerSection = document.getElementById("new-player-section");
         const noMsg = document.getElementById("no-players-msg");
+        const adminSection = document.getElementById("admin-players-section");
 
         // Todos pueden agregar de la lista
         addSection.classList.remove("hidden");
 
-        // Solo admin puede crear jugadores nuevos
+        // Solo admin puede crear jugadores nuevos y ver lista completa
         if (Auth.isAdmin()) {
             newPlayerSection.classList.remove("hidden");
+            adminSection.classList.remove("hidden");
+            this.renderAdminList();
         } else {
             newPlayerSection.classList.add("hidden");
+            adminSection.classList.add("hidden");
         }
 
         Players.renderList(listEl, Auth.isAdmin());
         Players.populateDropdown(dropdownEl);
 
         noMsg.style.display = Players.getAll().length === 0 ? "block" : "none";
+    },
+
+    async renderAdminList() {
+        const container = document.getElementById("admin-players-list");
+        const all = await Players.getAllPlayers();
+        if (all.length === 0) {
+            container.innerHTML = '<p class="empty-msg">No hay jugadores en la base de datos</p>';
+            return;
+        }
+        container.innerHTML = all.map(p => `
+            <div class="player-card">
+                <div class="player-info">
+                    <div class="player-name">${p.name}</div>
+                    <div class="player-details">
+                        <span class="player-rating">${p.rating} ★</span>
+                        <span class="player-position ${p.position === 'goalkeeper' ? 'gk' : ''}">${p.position === 'goalkeeper' ? '🧤 Arquero' : '⚽ Jugador'}</span>
+                        <span style="font-size: 0.65rem; color: ${p.added ? 'var(--accent)' : 'var(--text-secondary)'};">${p.added ? '● En sorteo' : '○ Disponible'}</span>
+                    </div>
+                </div>
+                <button class="btn-delete" onclick="PlayersUI.adminDelete('${p.name}')">✕</button>
+            </div>
+        `).join('');
     },
 
     setupEvents() {
@@ -225,6 +278,13 @@ const PlayersUI = {
     async remove(name) {
         if (confirm(`¿Eliminar a ${name}?`)) {
             await Players.remove(name);
+            this.render();
+        }
+    },
+
+    async adminDelete(name) {
+        if (confirm(`¿Eliminar permanentemente a ${name} de la base de datos?`)) {
+            await Players.deletePlayer(name);
             this.render();
         }
     },
