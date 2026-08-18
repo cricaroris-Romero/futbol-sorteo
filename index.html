@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Sorteo de Equipos</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <!-- ==================== LOGIN ==================== -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="logo">⚽</div>
+            <h1>SORTEO DE EQUIPOS</h1>
+            <p class="subtitle">Fútbol Amateur</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Usuario</label>
+                    <input type="text" id="username" placeholder="Ingresa tu usuario" required>
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+                <button type="submit" class="btn-primary">INGRESAR</button>
+                <p id="login-error" class="error-text hidden">Usuario o contraseña incorrectos</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN APP ==================== -->
+    <div id="app-screen" class="screen">
+        <header>
+            <div class="header-left">
+                <span class="logo-sm">⚽</span>
+                <h2>SORTEO</h2>
+            </div>
+            <div class="header-right">
+                <span id="user-display"></span>
+                <button id="logout-btn" class="btn-small">Salir</button>
+            </div>
+        </header>
+
+        <!-- TABS -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="players">Jugadores</button>
+            <button class="tab" data-tab="sorteo">Sorteo</button>
+            <button class="tab" data-tab="result">Resultado</button>
+            <button class="tab" data-tab="export">Exportar</button>
+            <button class="tab tab-admin hidden" data-tab="users">Usuarios</button>
+        </nav>
+
+        <!-- TAB: JUGADORES -->
+        <section id="tab-players" class="tab-content active">
+            <!-- Solo admin ve el formulario de agregar nuevo jugador -->
+            <div id="new-player-section" class="hidden">
+                <h3>Crear Nuevo Jugador</h3>
+                <div class="add-form">
+                    <div class="form-row-inline">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="new-player-name" placeholder="Nombre del jugador">
+                        </div>
+                        <button id="create-player-btn" class="btn-primary">Crear Jugador</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solo admin ve el formulario de agregar de lista -->
+            <div id="add-player-section" class="hidden">
+                <h3>Agregar Jugador de la Lista</h3>
+                <div class="add-form">
+                    <div class="form-row">
+                        <select id="player-select">
+                            <option value="">Seleccionar jugador...</option>
+                        </select>
+                    </div>
+                    <div class="form-row-inline">
+                        <div class="form-group">
+                            <label>Puntuación</label>
+                            <div class="rating-buttons">
+                                <button type="button" class="rating-btn" data-rating="1">1</button>
+                                <button type="button" class="rating-btn" data-rating="2">2</button>
+                                <button type="button" class="rating-btn" data-rating="3">3</button>
+                                <button type="button" class="rating-btn selected" data-rating="4">4</button>
+                                <button type="button" class="rating-btn" data-rating="5">5</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Posición</label>
+                            <select id="position-select">
+                                <option value="player">Jugador</option>
+                                <option value="goalkeeper">Arquero</option>
+                            </select>
+                        </div>
+                        <button id="add-player-btn" class="btn-primary">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de jugadores agregados -->
+            <h3>Jugadores Seleccionados</h3>
+            <p id="no-players-msg" class="empty-msg">No hay jugadores seleccionados aún</p>
+            <div id="players-list" class="players-grid"></div>
+        </section>
+
+        <!-- TAB: SORTEO -->
+        <section id="tab-sorteo" class="tab-content">
+            <div class="sorteo-config">
+                <h3>Configurar Sorteo</h3>
+                
+                <div class="config-group">
+                    <label>Cantidad de Equipos</label>
+                    <div class="team-count-btns">
+                        <button type="button" class="team-btn" data-teams="2">2</button>
+                        <button type="button" class="team-btn" data-teams="3">3</button>
+                        <button type="button" class="team-btn selected" data-teams="4">4</button>
+                        <button type="button" class="team-btn" data-teams="5">5</button>
+                    </div>
+                </div>
+
+                <div id="colors-section" class="config-group">
+                    <label>Colores de Equipos</label>
+                    <div id="team-colors"></div>
+                </div>
+
+                <button id="sort-btn" class="btn-sort">
+                    <span class="sort-icon">⚽</span>
+                    ¡SORTEAR!
+                </button>
+            </div>
+        </section>
+
+        <!-- TAB: RESULTADO -->
+        <section id="tab-result" class="tab-content">
+            <div id="result-area">
+                <p class="empty-msg">Aún no se ha realizado el sorteo</p>
+            </div>
+        </section>
+
+        <!-- TAB: EXPORTAR -->
+        <section id="tab-export" class="tab-content">
+            <div class="export-area">
+                <h3>Exportar Resultado</h3>
+                <p>Genera un PDF con los equipos del sorteo</p>
+                <button id="export-pdf-btn" class="btn-primary" disabled>Exportar PDF</button>
+            </div>
+        </section>
+
+        <!-- TAB: USUARIOS (Solo Admin) -->
+        <section id="tab-users" class="tab-content">
+            <div id="users-section">
+                <h3>Crear Nuevo Usuario</h3>
+                <div class="add-form">
+                    <div class="form-row-inline">
+                        <div class="form-group">
+                            <label>Nombre de usuario</label>
+                            <input type="text" id="new-username" placeholder="Usuario">
+                        </div>
+                        <div class="form-group">
+                            <label>Contraseña</label>
+                            <input type="password" id="new-password" placeholder="Contraseña">
+                        </div>
+                        <button id="create-user-btn" class="btn-primary">Crear Usuario</button>
+                    </div>
+                </div>
+
+                <h3>Usuarios Existentes</h3>
+                <div id="users-list" class="players-grid"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ==================== ANIMATION OVERLAY ==================== -->
+    <div id="animation-overlay" class="hidden">
+        <div id="bouncing-names"></div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/players.js"></script>
+    <script src="js/teams.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
