@@ -465,6 +465,7 @@ header {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    padding: 10px;
 }
 
 .bounce-name {
@@ -484,13 +485,34 @@ header {
 
 .sort-overlay-title {
     position: absolute;
-    top: 20px;
+    top: 15px;
     width: 100%;
     text-align: center;
     font-size: 1.5rem;
     color: var(--accent);
     text-transform: uppercase;
     letter-spacing: 3px;
+    padding: 0 10px;
+}
+
+.team-reveal-players {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 60px 15px 20px;
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.team-reveal-card {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    animation: bounce 0.5s ease-out;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* ==================== TABLET ==================== */
@@ -596,6 +618,26 @@ header {
     .export-area { padding: 20px 12px; }
     .export-area h3 { font-size: 0.9rem; }
     .export-area p { font-size: 0.8rem; }
+
+    .sort-overlay-title {
+        font-size: 1rem;
+        letter-spacing: 1px;
+        top: 10px;
+    }
+
+    .bounce-name {
+        font-size: 0.9rem;
+    }
+
+    .team-reveal-players {
+        padding: 50px 10px 15px;
+        gap: 8px;
+    }
+
+    .team-reveal-card {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
 
     #users-section .add-form .form-row-inline {
         flex-direction: column;

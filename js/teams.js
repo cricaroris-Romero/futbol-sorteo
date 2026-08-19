@@ -167,28 +167,29 @@ const Teams = {
         bouncingContainer.innerHTML = '<div class="sort-overlay-title">⚽ Sorteando equipos...</div>';
 
         // Create bouncing names
+        const isMobile = window.innerWidth <= 600;
         const names = players.map(p => {
             const el = document.createElement("div");
             el.className = "bounce-name";
             el.textContent = p.name;
-            el.style.left = Math.random() * 80 + 5 + "%";
-            el.style.top = Math.random() * 70 + 10 + "%";
+            el.style.left = Math.random() * 70 + 5 + "%";
+            el.style.top = Math.random() * 60 + 15 + "%";
             el.style.animationDelay = Math.random() * 0.5 + "s";
-            el.style.fontSize = (0.8 + Math.random() * 0.8) + "rem";
+            el.style.fontSize = (isMobile ? 0.7 + Math.random() * 0.4 : 0.8 + Math.random() * 0.8) + "rem";
             bouncingContainer.appendChild(el);
             return el;
         });
 
-        // Animate for 3 seconds, moving names around
+        // Animate for 5 seconds, moving names around
         const interval = setInterval(() => {
             names.forEach(el => {
-                el.style.left = Math.random() * 80 + 5 + "%";
-                el.style.top = Math.random() * 70 + 10 + "%";
+                el.style.left = Math.random() * 70 + 5 + "%";
+                el.style.top = Math.random() * 60 + 15 + "%";
                 el.style.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
             });
         }, 300);
 
-        await new Promise(r => setTimeout(r, 3000));
+        await new Promise(r => setTimeout(r, 5000));
         clearInterval(interval);
 
         // Sort teams
@@ -202,17 +203,11 @@ const Teams = {
                 <div class="sort-overlay-title" style="color: ${team.color};">
                     ⚽ ${team.name}
                 </div>
-                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; padding: 20px;">
+                <div class="team-reveal-players">
                     ${team.players.map(p => `
-                        <div style="
+                        <div class="team-reveal-card" style="
                             background: ${team.color};
                             color: ${this.isLightColor(team.color) ? '#000' : '#fff'};
-                            padding: 10px 20px;
-                            border-radius: 10px;
-                            font-weight: bold;
-                            font-size: 1.1rem;
-                            animation: bounce 0.5s ease-out;
-                            box-shadow: 0 4px 15px ${team.color}60;
                         ">
                             ${p.position === 'goalkeeper' ? '🧤 ' : ''}${p.name}
                         </div>
