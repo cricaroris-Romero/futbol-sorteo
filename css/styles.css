@@ -484,8 +484,10 @@ header {
 }
 
 .sort-overlay-title {
-    position: absolute;
+    position: fixed;
     top: 15px;
+    left: 0;
+    right: 0;
     width: 100%;
     text-align: center;
     font-size: 1.5rem;
@@ -493,6 +495,7 @@ header {
     text-transform: uppercase;
     letter-spacing: 3px;
     padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .team-reveal-players {
