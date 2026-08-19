@@ -64,6 +64,7 @@ const Teams = {
             });
         }
 
+        // Place goalkeepers first, one per team
         goalkeepers.forEach((gk, idx) => {
             if (idx < numTeams && teams[idx].players.length < teams[idx].maxPlayers) {
                 teams[idx].players.push(gk);
@@ -71,43 +72,29 @@ const Teams = {
             }
         });
 
-        // Group by rating, shuffle within each group
-        const ratingGroups = {};
+        // Sort field players by rating descending, shuffle within same rating
+        const byRating = {};
         fieldPlayers.forEach(p => {
-            if (!ratingGroups[p.rating]) ratingGroups[p.rating] = [];
-            ratingGroups[p.rating].push(p);
+            if (!byRating[p.rating]) byRating[p.rating] = [];
+            byRating[p.rating].push(p);
         });
-        Object.values(ratingGroups).forEach(group => this.shuffle(group));
+        Object.values(byRating).forEach(g => this.shuffle(g));
 
-        // Interleave: take one from each rating group at a time
-        // So the order is like: 5,4,3,2,1, 5,4,3,2,1, 4,3,2,1,...
-        // This guarantees same-rating players go to different teams
-        const ratingKeys = Object.keys(ratingGroups).map(Number).sort((a, b) => b - a);
-        const ordered = [];
-        let hasMore = true;
+        const sorted = [];
+        Object.keys(byRating).map(Number).sort((a, b) => b - a).forEach(r => {
+            byRating[r].forEach(p => sorted.push(p));
+        });
 
-        while (hasMore) {
-            hasMore = false;
-            for (const r of ratingKeys) {
-                if (ratingGroups[r].length > 0) {
-                    ordered.push(ratingGroups[r].shift());
-                    if (ratingGroups[r].length > 0) hasMore = true;
-                }
-            }
-        }
-
-        // Place each player: pick team with most room, break ties by lowest rating
-        ordered.forEach(player => {
+        // Greedy: each player goes to the team with LOWEST totalRating that has room
+        sorted.forEach(player => {
             let bestTeam = 0;
-            let bestScore = -1;
+            let lowestRating = Infinity;
 
             for (let i = 0; i < numTeams; i++) {
                 const room = teams[i].maxPlayers - teams[i].players.length;
                 if (room <= 0) continue;
-                // Score: prioritize room, break ties with lowest total rating
-                const score = room * 1000 - teams[i].totalRating;
-                if (score > bestScore) {
-                    bestScore = score;
+                if (teams[i].totalRating < lowestRating) {
+                    lowestRating = teams[i].totalRating;
                     bestTeam = i;
                 }
             }
